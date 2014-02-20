@@ -1,0 +1,19 @@
+﻿<Window x:Class="YashmaClientWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Каталог ювелирного завода Яшма" Height="453.299" Width="746.181">
+    <Grid>
+        <TreeView HorizontalAlignment="Left" Width="200" Background="#FF0000C0" Foreground="White" Margin="0,24,0,0"/>
+        <Menu Height="24" VerticalAlignment="Top" Background="#FFD4D4D4">
+            <MenuItem Header="КАТАЛОГ" Height="24">
+                <MenuItem Header="Каталог" Height="24" Width="150"/>
+                <MenuItem Header="Обновить" Height="24" Width="150"/>
+                <MenuItem Header="Выход" Height="24" Width="150"/>
+            </MenuItem>
+            <MenuItem Header="ЗАКАЗ" Height="24"/>
+            <MenuItem Header="О ПРОГРАММЕ" Height="24"/>
+        </Menu>
+        <ScrollViewer Margin="200,24,0,0"/>
+
+    </Grid>
+</Window>
