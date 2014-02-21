@@ -1,9 +1,15 @@
 ﻿<Window x:Class="YashmaClientWPF.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Каталог ювелирного завода Яшма" Height="453.299" Width="746.181">
+        Title="Каталог ювелирного завода Яшма" Height="500" Width="800" Loaded="Window_Loaded" SizeChanged="Window_SizeChanged">
     <Grid>
-        <TreeView HorizontalAlignment="Left" Width="200" Background="#FF0000C0" Foreground="White" Margin="0,24,0,0"/>
+        <TreeView x:Name="tree_menu" HorizontalAlignment="Left" Width="200" FontSize="15" Background="#FF0000C0" Foreground="White" Margin="0,24,0,0" ItemsSource="{Binding XPath=ChildNode}">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding XPath=ChildNode}">
+                    <TextBlock Text="{Binding XPath=@Name}" Tag="{Binding XPath=@Tag}" Foreground="White" MouseUp="TextBlock_MouseUp"/>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
         <Menu Height="24" VerticalAlignment="Top" Background="#FFD4D4D4">
             <MenuItem Header="КАТАЛОГ" Height="24">
                 <MenuItem Header="Каталог" Height="24" Width="150"/>
@@ -13,7 +19,9 @@
             <MenuItem Header="ЗАКАЗ" Height="24"/>
             <MenuItem Header="О ПРОГРАММЕ" Height="24"/>
         </Menu>
-        <ScrollViewer Margin="200,24,0,0"/>
+        <ScrollViewer x:Name="content_scroll" Margin="200,24,0,0" >
+            <Grid x:Name="content"/>
+        </ScrollViewer>
 
     </Grid>
 </Window>
