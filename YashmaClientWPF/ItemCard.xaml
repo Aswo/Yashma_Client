@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="YashmaClientWPF.ItemCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" >
+    <Grid>
+        <Image x:Name="icon" HorizontalAlignment="Left" Height="128" Margin="10,10,0,0" VerticalAlignment="Top" Width="128"/>
+        <Label x:Name="name" Margin="143,10,10,0" VerticalAlignment="Top"/>
+        <Label x:Name="weight" Margin="143,40.96,10,0" VerticalAlignment="Top"/>
+        <Label x:Name="sample" Margin="143,71.92,10,0" VerticalAlignment="Top"/>
+        <Label x:Name="description" Margin="143,102.88,10,0" VerticalAlignment="Top"/>
+        <Button Content="Button" Margin="0,0,10,48" HorizontalAlignment="Right" Width="131" Height="19.96" VerticalAlignment="Bottom"/>
+        <Button Content="Button" Margin="0,0,10,72.96" HorizontalAlignment="Right" Width="131" Height="19.96" VerticalAlignment="Bottom"/>
+        <Label x:Name="total_weight" Margin="0,0,103.006,97.92" Height="25.96" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="37.994"/>
+        <Label x:Name="total_count" Margin="0,0,103.006,128.88" Height="25.96" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="37.994"/>
+        <StatusBar Height="33" Margin="10,0,10,10" VerticalAlignment="Bottom">
+            <Label Content="Общее количество"/>
+        </StatusBar>
+        <Grid x:Name="grid_size" Margin="10,143,146,48"/>
+
+    </Grid>
+</UserControl>

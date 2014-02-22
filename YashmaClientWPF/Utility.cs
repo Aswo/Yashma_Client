@@ -38,7 +38,7 @@ namespace YashmaClientWPF
                     treeItem.Tag = reader.GetAttribute("Tag");
                     treeItem.Weight = reader.GetAttribute("Weight");
                     treeItem.Size = reader.GetAttribute("Size");
-                    treeItem.Сontent = reader.GetAttribute("Сontent");
+                    treeItem.Sample = reader.GetAttribute("Сontent");
                     treeItem.Image = reader.GetAttribute("Image");
                     treeItem.Description = reader.GetAttribute("Description");
 
@@ -55,7 +55,7 @@ namespace YashmaClientWPF
         public string Tag { get; set; }
         public string Weight { get; set; }
         public string Size { get; set; }
-        public string Сontent { get; set; }
+        public string Sample { get; set; }
         public string Image { get; set; }
         public string Description { get; set; }
     }

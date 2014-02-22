@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" Height="194" Width="148">
+             mc:Ignorable="d" Height="200" Width="148">
     <Grid>
         <Rectangle Fill="#FFF2F9D9" HorizontalAlignment="Left" Height="172" Stroke="#00000000" VerticalAlignment="Top" Width="148"/>
         <Image x:Name="icon" HorizontalAlignment="Left" Height="128" Margin="10,10,0,0" VerticalAlignment="Top" Width="128"/>
