@@ -22,6 +22,9 @@ namespace YashmaClientWPF
     {
         string selected_node = "";
         string id = "0";
+
+        Order order = new Order();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -121,14 +124,36 @@ namespace YashmaClientWPF
                 itemCard.weight.Content = "Вес: " + (temp = tree_items[0].Weight.Split('|'))[0] + " - " + temp[temp.Length - 1];
                 itemCard.sample.Content = "Проба: " + tree_items[0].Sample;
                 itemCard.zoom.MouseUp += zoom_MouseUp;
+                itemCard.booking.Click += booking_Click;
+                itemCard.order.Click += order_Click;
                 itemCard.description.Content = tree_items[0].Description;
-
                 itemCard.Margin = content.Margin;
                 itemCard.icon.SetValue(Image.SourceProperty, imgs.ConvertFromString(Environment.CurrentDirectory + "\\data\\images\\" + (id = tree_items[0].Image) + "_p.png"));
 
                 content.Children.Add(itemCard);
             }
             content.UpdateLayout();
+        }
+
+        /// <summary>
+        /// Показывает корзину
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void order_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
+        /// <summary>
+        /// Добавляет позицию в товар
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void booking_Click(object sender, RoutedEventArgs e)
+        {
+            order.Add();
         }
 
         void zoom_MouseUp(object sender, MouseButtonEventArgs e)

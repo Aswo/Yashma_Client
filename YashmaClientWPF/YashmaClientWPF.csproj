@@ -56,6 +56,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Basket.xaml.cs">
+      <DependentUpon>Basket.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Order.cs" />
     <Compile Include="ContentElement.xaml.cs">
       <DependentUpon>ContentElement.xaml</DependentUpon>
     </Compile>
@@ -69,6 +73,10 @@
     <Compile Include="ZoomImageWindow.xaml.cs">
       <DependentUpon>ZoomImageWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Basket.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ContentElement.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

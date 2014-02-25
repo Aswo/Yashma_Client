@@ -10,8 +10,8 @@
         <Label x:Name="weight" Margin="143,40.96,10,0" VerticalAlignment="Top"/>
         <Label x:Name="sample" Margin="143,71.92,10,0" VerticalAlignment="Top"/>
         <Label x:Name="description" Margin="143,102.88,10,0" VerticalAlignment="Top"/>
-        <Button Content="Button" Margin="0,0,10,48" HorizontalAlignment="Right" Width="131" Height="19.96" VerticalAlignment="Bottom"/>
-        <Button Content="Button" Margin="0,0,10,72.96" HorizontalAlignment="Right" Width="131" Height="19.96" VerticalAlignment="Bottom"/>
+        <Button x:Name="order" Content="Заказ" Margin="0,0,10,48" HorizontalAlignment="Right" Width="131" Height="19.96" VerticalAlignment="Bottom"/>
+        <Button x:Name="booking" Content="Заказать" Margin="0,0,10,72.96" HorizontalAlignment="Right" Width="131" Height="19.96" VerticalAlignment="Bottom"/>
         <Label x:Name="total_weight" Margin="0,0,103.006,97.92" Height="25.96" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="37.994"/>
         <Label x:Name="total_count" Margin="0,0,103.006,128.88" Height="25.96" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="37.994"/>
         <StatusBar Height="33" Margin="10,0,10,10" VerticalAlignment="Bottom">
