@@ -21,6 +21,7 @@ namespace YashmaClientWPF
     public partial class MainWindow : Window
     {
         string selected_node = "";
+        string id = "0";
         public MainWindow()
         {
             InitializeComponent();
@@ -28,12 +29,22 @@ namespace YashmaClientWPF
 
         public XmlDataProvider DataProvider { get; set; }
 
+        /// <summary>
+        /// Загружает деревовидное меню
+        /// </summary>
         private void LoadTreeMenu()
         {
-            DataProvider = new XmlDataProvider();
-            DataProvider.Source = new Uri(Environment.CurrentDirectory + "\\data\\tree_menu.xml");
-            DataProvider.XPath = "/NodeList";
-            this.tree_menu.DataContext = DataProvider;
+            try
+            {
+                DataProvider = new XmlDataProvider();
+                DataProvider.Source = new Uri(Environment.CurrentDirectory + "\\data\\tree_menu.xml");
+                DataProvider.XPath = "/NodeList";
+                this.tree_menu.DataContext = DataProvider;
+            }
+            catch
+            {
+                MessageBox.Show("Не найден файл tree_menu.xml");
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -42,16 +53,27 @@ namespace YashmaClientWPF
             Utility.LoadItems();
         }
 
+        #region Обновление рабочей области
+        /// <summary>
+        /// Вызывает обновление рабочей области при изменении размеров окна
+        /// </summary>
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (selected_node.Length > 0) Update(Utility.SelectItems(selected_node));
         }
 
+        /// <summary>
+        /// Вызывает обновление рабочей области при выборе элемента из деревовидного меню
+        /// </summary>
         private void TextBlock_MouseUp(object sender, MouseButtonEventArgs e)
         {
             Update(Utility.SelectItems(selected_node = ((sender as TextBlock).Tag as XmlAttribute).Value));
         }
 
+        /// <summary>
+        /// Выводит весь полученый список товаров, если в списке один элемент, выводит карточку товара.
+        /// </summary>
+        /// <param name="tree_items">Список товаров</param>
         private void Update(List<TreeItem> tree_items)
         {
             content.Children.Clear();
@@ -75,6 +97,7 @@ namespace YashmaClientWPF
                         {
                             ImageSourceConverter imgs = new ImageSourceConverter();
                             ContentElement contentElement = new ContentElement();
+                            contentElement.path = tree_items[m].Tag;
                             contentElement.article.Content = tree_items[m].Name;
                             contentElement.MouseUp += contentElement_MouseUp;
                             contentElement.icon.SetValue(Image.SourceProperty, imgs.ConvertFromString(Environment.CurrentDirectory + "\\data\\images\\" + tree_items[m++].Image + "_p.png"));
@@ -97,31 +120,31 @@ namespace YashmaClientWPF
                 itemCard.name.Content = "Артикул: " + tree_items[0].Name;
                 itemCard.weight.Content = "Вес: " + (temp = tree_items[0].Weight.Split('|'))[0] + " - " + temp[temp.Length - 1];
                 itemCard.sample.Content = "Проба: " + tree_items[0].Sample;
+                itemCard.zoom.MouseUp += zoom_MouseUp;
                 itemCard.description.Content = tree_items[0].Description;
 
                 itemCard.Margin = content.Margin;
-                itemCard.icon.SetValue(Image.SourceProperty, imgs.ConvertFromString(Environment.CurrentDirectory + "\\data\\images\\" + tree_items[0].Image + "_p.png"));
+                itemCard.icon.SetValue(Image.SourceProperty, imgs.ConvertFromString(Environment.CurrentDirectory + "\\data\\images\\" + (id = tree_items[0].Image) + "_p.png"));
 
                 content.Children.Add(itemCard);
             }
             content.UpdateLayout();
         }
 
+        void zoom_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            ZoomImageWindow ziw = new ZoomImageWindow(id);
+            ziw.Show();
+        }
+
+        /// <summary>
+        /// Вызывает обновление рабочей области при плике по айтему товара
+        /// </summary>
         void contentElement_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            content.Children.Clear();
-            content.ColumnDefinitions.Clear();
-            content.RowDefinitions.Clear();
-
-            ContentElement contentElement = sender as ContentElement;
-            ImageSourceConverter imgs = new ImageSourceConverter();
-
-            ItemCard itemCard = new ItemCard();
-            itemCard.name.Content = contentElement.article.Content;
-            itemCard.Margin = content.Margin;
-            itemCard.icon.SetValue(Image.SourceProperty, imgs.ConvertFromString(Environment.CurrentDirectory + "\\data\\images\\" + 8 + "_p.png"));
-
-            content.Children.Add(itemCard);
+            Update(Utility.SelectItems(selected_node = (sender as ContentElement).path));
         }
+
+        #endregion
     }
 }

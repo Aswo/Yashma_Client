@@ -22,5 +22,6 @@ namespace YashmaClientWPF
         {
             InitializeComponent();
         }
+        public string path { get; set; }
     }
 }

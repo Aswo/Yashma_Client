@@ -66,6 +66,9 @@
       <DependentUpon>SizeGridItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utility.cs" />
+    <Compile Include="ZoomImageWindow.xaml.cs">
+      <DependentUpon>ZoomImageWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="ContentElement.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -87,6 +90,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="SizeGridItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ZoomImageWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

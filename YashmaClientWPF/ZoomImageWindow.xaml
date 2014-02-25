@@ -1,0 +1,29 @@
+﻿<Window x:Class="YashmaClientWPF.ZoomImageWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Name="WPFWindow"
+        Title="" 
+        mc:Ignorable="d" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        Height="610" 
+        Width="566" WindowStartupLocation="CenterOwner">
+
+    <Grid x:Name="LayoutRoot" >
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="65"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="1" Name="border" ClipToBounds="True">
+            <Image Name="image" Opacity="1"/>
+        </Border>
+        <Menu Height="24" VerticalAlignment="Top" Background="#FFD4D4D4">
+            <MenuItem Header="УВЕЛИЧИТЬ" Height="24" Click="MenuItem_Click"/>
+            <MenuItem Header="УМЕНЬШИТЬ" Height="24" Click="MenuItem_Click_1"/>
+            <MenuItem Header="СБРОС" Height="24" Click="MenuItem_Click_2"/>
+        </Menu>
+        <Label Content="Используйте колесико мыши для увеличения текущего масштаба." Height="35" Margin="10,29,10,0" Name="label1" VerticalAlignment="Top" HorizontalContentAlignment="Center" />
+    </Grid>
+</Window>
