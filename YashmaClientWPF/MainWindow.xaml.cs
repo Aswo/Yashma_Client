@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -20,11 +21,24 @@ namespace YashmaClientWPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        System.Windows.Threading.DispatcherTimer timer;
         string selected_node = "";
         string id = "0";
+        List<TreeItem> tree_items;
+
         public MainWindow()
         {
             InitializeComponent();
+            timer = new System.Windows.Threading.DispatcherTimer();
+            timer.Tick += timer_Tick;
+        }
+
+        void timer_Tick(object sender, EventArgs e)
+        {
+            timer.Stop();
+            tree_items = Utility.SelectItems(selected_node);
+            Thread t1 = new Thread(new ThreadStart(Update));
+            t1.Start();
         }
 
         public XmlDataProvider DataProvider { get; set; }
@@ -59,7 +73,11 @@ namespace YashmaClientWPF
         /// </summary>
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (selected_node.Length > 0) Update(Utility.SelectItems(selected_node));
+            if (selected_node.Length > 0)
+            {
+                timer.Interval = TimeSpan.FromMilliseconds(1000);
+                timer.Start();
+            }
         }
 
         /// <summary>
@@ -67,68 +85,73 @@ namespace YashmaClientWPF
         /// </summary>
         private void TextBlock_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            Update(Utility.SelectItems(selected_node = ((sender as TextBlock).Tag as XmlAttribute).Value));
+            tree_items = Utility.SelectItems(selected_node = ((sender as TextBlock).Tag as XmlAttribute).Value);
+            Thread t1 = new Thread(new ThreadStart(Update));
+            t1.Start();
         }
 
         /// <summary>
         /// Выводит весь полученый список товаров, если в списке один элемент, выводит карточку товара.
         /// </summary>
         /// <param name="tree_items">Список товаров</param>
-        private void Update(List<TreeItem> tree_items)
+        private void Update()
         {
-            content.Children.Clear();
-            content.ColumnDefinitions.Clear();
-            content.RowDefinitions.Clear();
-
-            if (tree_items.Count != 1)
+            Dispatcher.Invoke(new ThreadStart(delegate
             {
-                int row_count = (int)Math.Ceiling(Width / 220) - 1;
-                int col_count = (int)Math.Ceiling((double)tree_items.Count / row_count);
+                content.Children.Clear();
+                content.ColumnDefinitions.Clear();
+                content.RowDefinitions.Clear();
 
-                for (int i = 0; i < row_count; i++) content.ColumnDefinitions.Add(new ColumnDefinition());
-
-                for (int i = 0; i < col_count; i++) content.RowDefinitions.Add(new RowDefinition());
-
-                for (int i = 0, m = 0; i < col_count; i++)
+                if (tree_items.Count != 1)
                 {
-                    for (int j = 0; j < row_count; j++)
+                    int row_count = (int)Math.Ceiling(Width / 220) - 1;
+                    int col_count = (int)Math.Ceiling((double)tree_items.Count / row_count);
+
+                    for (int i = 0; i < row_count; i++) content.ColumnDefinitions.Add(new ColumnDefinition());
+
+                    for (int i = 0; i < col_count; i++) content.RowDefinitions.Add(new RowDefinition());
+
+                    for (int i = 0, m = 0; i < col_count; i++)
                     {
-                        if (m < tree_items.Count)
+                        for (int j = 0; j < row_count; j++)
                         {
-                            ImageSourceConverter imgs = new ImageSourceConverter();
-                            ContentElement contentElement = new ContentElement();
-                            contentElement.path = tree_items[m].Tag;
-                            contentElement.article.Content = tree_items[m].Name;
-                            contentElement.MouseUp += contentElement_MouseUp;
-                            contentElement.icon.SetValue(Image.SourceProperty, imgs.ConvertFromString(Environment.CurrentDirectory + "\\data\\images\\" + tree_items[m++].Image + "_p.png"));
+                            if (m < tree_items.Count)
+                            {
+                                ImageSourceConverter imgs = new ImageSourceConverter();
+                                ContentElement contentElement = new ContentElement();
+                                contentElement.path = tree_items[m].Tag;
+                                contentElement.article.Content = tree_items[m].Name;
+                                contentElement.MouseUp += contentElement_MouseUp;
+                                contentElement.icon.SetValue(Image.SourceProperty, imgs.ConvertFromString(Environment.CurrentDirectory + "\\data\\images\\" + tree_items[m++].Image + "_p.png"));
 
-                            Grid.SetRow(contentElement, i);
-                            Grid.SetColumn(contentElement, j);
+                                Grid.SetRow(contentElement, i);
+                                Grid.SetColumn(contentElement, j);
 
-                            content.Children.Add(contentElement);
+                                content.Children.Add(contentElement);
+                            }
                         }
                     }
                 }
-            }
-            else
-            {
-                string[] temp;
-                ContentElement contentElement = new ContentElement();
-                ImageSourceConverter imgs = new ImageSourceConverter();
+                else
+                {
+                    string[] temp;
+                    ContentElement contentElement = new ContentElement();
+                    ImageSourceConverter imgs = new ImageSourceConverter();
 
-                ItemCard itemCard = new ItemCard();
-                itemCard.name.Content = "Артикул: " + tree_items[0].Name;
-                itemCard.weight.Content = "Вес: " + (temp = tree_items[0].Weight.Split('|'))[0] + " - " + temp[temp.Length - 1];
-                itemCard.sample.Content = "Проба: " + tree_items[0].Sample;
-                itemCard.zoom.MouseUp += zoom_MouseUp;
-                itemCard.description.Content = tree_items[0].Description;
+                    ItemCard itemCard = new ItemCard();
+                    itemCard.name.Content = "Артикул: " + tree_items[0].Name;
+                    itemCard.weight.Content = "Вес: " + (temp = tree_items[0].Weight.Split('|'))[0] + " - " + temp[temp.Length - 1];
+                    itemCard.sample.Content = "Проба: " + tree_items[0].Sample;
+                    itemCard.zoom.MouseUp += zoom_MouseUp;
+                    itemCard.description.Content = tree_items[0].Description;
 
-                itemCard.Margin = content.Margin;
-                itemCard.icon.SetValue(Image.SourceProperty, imgs.ConvertFromString(Environment.CurrentDirectory + "\\data\\images\\" + (id = tree_items[0].Image) + "_p.png"));
+                    itemCard.Margin = content.Margin;
+                    itemCard.icon.SetValue(Image.SourceProperty, imgs.ConvertFromString(Environment.CurrentDirectory + "\\data\\images\\" + (id = tree_items[0].Image) + "_p.png"));
 
-                content.Children.Add(itemCard);
-            }
-            content.UpdateLayout();
+                    content.Children.Add(itemCard);
+                }
+                content.UpdateLayout();
+            }));
         }
 
         void zoom_MouseUp(object sender, MouseButtonEventArgs e)
@@ -142,7 +165,9 @@ namespace YashmaClientWPF
         /// </summary>
         void contentElement_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            Update(Utility.SelectItems(selected_node = (sender as ContentElement).path));
+            tree_items = Utility.SelectItems(selected_node = (sender as ContentElement).path);
+            Thread t1 = new Thread(new ThreadStart(Update));
+            t1.Start();
         }
 
         #endregion
