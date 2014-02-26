@@ -14,6 +14,7 @@ namespace YashmaClientWPF
         public static List<TreeItem> SelectItems(string path)
         {
             List<TreeItem> new_tree_items = new List<TreeItem>();
+            if (path == "") return new_tree_items;
             foreach (TreeItem item in tree_items)
             {
                 if (item.Tag.IndexOf(path) > -1)
@@ -49,7 +50,7 @@ namespace YashmaClientWPF
         }
     }
 
-    class TreeItem
+    public class TreeItem
     {
         public string Name { get; set; }
         public string Tag { get; set; }

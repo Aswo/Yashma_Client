@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -9,31 +10,65 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml;
 
 namespace YashmaClientWPF
 {
     /// <summary>
     /// Логика взаимодействия для ZoomImageWindow.xaml
     /// </summary>
-    public partial class ZoomImageWindow : Window
+    public partial class ItemCardWindow : Window
     {
         private Point origin;
         private Point start;
         private Matrix def;
 
-        public ZoomImageWindow(string id)
+        public ItemCardWindow(TreeItem tree_item)
         {
             InitializeComponent();
-            ImageSourceConverter imgs = new ImageSourceConverter();
-            image.SetValue(Image.SourceProperty, imgs.ConvertFromString(Environment.CurrentDirectory + "\\data\\images\\" + id + "_f.png"));
 
-            using (FileStream fileStream = new FileStream(Environment.CurrentDirectory + "\\data\\images\\" + id + "_f.png", FileMode.Open, FileAccess.Read))
+            string[] temp;
+            ImageSourceConverter imgs = new ImageSourceConverter();
+            name.Content = "Артикул: " + tree_item.Name;
+            weight.Content = "Вес: " + (temp = tree_item.Weight.Split('|'))[0] + " - " + temp[temp.Length - 1];
+            sample.Content = "Проба: " + tree_item.Sample;
+            description.Content = tree_item.Description;
+
+            image.SetValue(Image.SourceProperty, imgs.ConvertFromString(Environment.CurrentDirectory + "\\data\\images\\" + tree_item.Image + "_f.png"));
+
+            size_list.Children.Clear();
+            size_list.ColumnDefinitions.Clear();
+            size_list.RowDefinitions.Clear();
+            
+            string[] sizes = tree_item.Size.Split('|');
+            string[] weights = tree_item.Weight.Split('|');
+
+            int row_count = 5;
+            int col_count = (int)Math.Ceiling((double)sizes.Length / row_count);
+
+            for (int i = 0; i < row_count; i++) size_list.ColumnDefinitions.Add(new ColumnDefinition());
+
+            for (int i = 0; i < col_count; i++) size_list.RowDefinitions.Add(new RowDefinition());
+
+            for (int i = 0, m = 0; i < col_count; i++)
             {
-                BitmapFrame frame = BitmapFrame.Create(fileStream, BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
-                Width = frame.PixelWidth;
-                Height = frame.PixelHeight + 53 + 85;
+                for (int j = 0; j < row_count; j++)
+                {
+                    if (m < sizes.Length)
+                    {
+                        SizeGridItem sgi = new SizeGridItem();
+                        sgi.info.Content = sizes[m] + " - " + weights[m++] + " гр.";
+
+                        Grid.SetRow(sgi, i);
+                        Grid.SetColumn(sgi, j);
+
+                        size_list.Children.Add(sgi);
+                    }
+                }
             }
+              
             def = image.RenderTransform.Value;
             WPFWindow.MouseWheel += MainWindow_MouseWheel;
 

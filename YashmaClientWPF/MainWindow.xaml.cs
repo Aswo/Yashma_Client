@@ -22,13 +22,15 @@ namespace YashmaClientWPF
     public partial class MainWindow : Window
     {
         System.Windows.Threading.DispatcherTimer timer;
-        string selected_node = "";
+        List<string> selected_node = new List<string>();
+        bool ignor = false;
         string id = "0";
         List<TreeItem> tree_items;
 
         public MainWindow()
         {
             InitializeComponent();
+            selected_node.Add("");
             timer = new System.Windows.Threading.DispatcherTimer();
             timer.Tick += timer_Tick;
         }
@@ -36,7 +38,13 @@ namespace YashmaClientWPF
         void timer_Tick(object sender, EventArgs e)
         {
             timer.Stop();
-            tree_items = Utility.SelectItems(selected_node);
+            tree_items = Utility.SelectItems(selected_node[selected_node.Count - 1]);
+
+            for (int i = 1; tree_items.Count == 1; i++)
+            {
+                tree_items = Utility.SelectItems(selected_node[selected_node.Count - i]);
+            }
+
             Thread t1 = new Thread(new ThreadStart(Update));
             t1.Start();
         }
@@ -73,7 +81,7 @@ namespace YashmaClientWPF
         /// </summary>
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (selected_node.Length > 0)
+            if (selected_node[selected_node.Count - 1].Length > 0)
             {
                 timer.Interval = TimeSpan.FromMilliseconds(1000);
                 timer.Start();
@@ -85,7 +93,8 @@ namespace YashmaClientWPF
         /// </summary>
         private void TextBlock_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            tree_items = Utility.SelectItems(selected_node = ((sender as TextBlock).Tag as XmlAttribute).Value);
+            selected_node.Add(((sender as TextBlock).Tag as XmlAttribute).Value);
+            tree_items = Utility.SelectItems(selected_node[selected_node.Count - 1]);
             Thread t1 = new Thread(new ThreadStart(Update));
             t1.Start();
         }
@@ -98,12 +107,12 @@ namespace YashmaClientWPF
         {
             Dispatcher.Invoke(new ThreadStart(delegate
             {
-                content.Children.Clear();
-                content.ColumnDefinitions.Clear();
-                content.RowDefinitions.Clear();
-
                 if (tree_items.Count != 1)
                 {
+                    content.Children.Clear();
+                    content.ColumnDefinitions.Clear();
+                    content.RowDefinitions.Clear();
+
                     int row_count = (int)Math.Ceiling(Width / 220) - 1;
                     int col_count = (int)Math.Ceiling((double)tree_items.Count / row_count);
 
@@ -134,30 +143,11 @@ namespace YashmaClientWPF
                 }
                 else
                 {
-                    string[] temp;
-                    ContentElement contentElement = new ContentElement();
-                    ImageSourceConverter imgs = new ImageSourceConverter();
-
-                    ItemCard itemCard = new ItemCard();
-                    itemCard.name.Content = "Артикул: " + tree_items[0].Name;
-                    itemCard.weight.Content = "Вес: " + (temp = tree_items[0].Weight.Split('|'))[0] + " - " + temp[temp.Length - 1];
-                    itemCard.sample.Content = "Проба: " + tree_items[0].Sample;
-                    itemCard.zoom.MouseUp += zoom_MouseUp;
-                    itemCard.description.Content = tree_items[0].Description;
-
-                    itemCard.Margin = content.Margin;
-                    itemCard.icon.SetValue(Image.SourceProperty, imgs.ConvertFromString(Environment.CurrentDirectory + "\\data\\images\\" + (id = tree_items[0].Image) + "_p.png"));
-
-                    content.Children.Add(itemCard);
+                    ItemCardWindow icw = new ItemCardWindow(tree_items[0]);
+                    icw.Show();
                 }
                 content.UpdateLayout();
             }));
-        }
-
-        void zoom_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            ZoomImageWindow ziw = new ZoomImageWindow(id);
-            ziw.Show();
         }
 
         /// <summary>
@@ -165,7 +155,8 @@ namespace YashmaClientWPF
         /// </summary>
         void contentElement_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            tree_items = Utility.SelectItems(selected_node = (sender as ContentElement).path);
+            selected_node.Add((sender as ContentElement).path);
+            tree_items = Utility.SelectItems(selected_node[selected_node.Count - 1]);
             Thread t1 = new Thread(new ThreadStart(Update));
             t1.Start();
         }

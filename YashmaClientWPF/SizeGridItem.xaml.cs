@@ -18,9 +18,32 @@ namespace YashmaClientWPF
     /// </summary>
     public partial class SizeGridItem : UserControl
     {
+        public int index { get; set; }
         public SizeGridItem()
         {
             InitializeComponent();
+            index_view.Text = (index = 0).ToString();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            index_view.Text = (++index).ToString();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            index_view.Text = --index < 0 ? "0" : index.ToString();
+        }
+
+        private void index_view_GotFocus(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void index_view_LostFocus(object sender, RoutedEventArgs e)
+        {
+            int ind = 0;
+            index_view.Text = int.TryParse(index_view.Text, out ind) ? (index = Convert.ToInt32(index_view.Text)) < 0 ? "0" : index.ToString() : index_view.Text = index.ToString();
         }
     }
 }
