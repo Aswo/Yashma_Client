@@ -22,15 +22,16 @@ namespace YashmaClientWPF
     public partial class MainWindow : Window
     {
         System.Windows.Threading.DispatcherTimer timer;
-        List<string> selected_node = new List<string>();
-        bool ignor = false;
+        string selected_node = "";
         string id = "0";
         List<TreeItem> tree_items;
+
+
+        Order order = new Order();
 
         public MainWindow()
         {
             InitializeComponent();
-            selected_node.Add("");
             timer = new System.Windows.Threading.DispatcherTimer();
             timer.Tick += timer_Tick;
         }
@@ -38,13 +39,7 @@ namespace YashmaClientWPF
         void timer_Tick(object sender, EventArgs e)
         {
             timer.Stop();
-            tree_items = Utility.SelectItems(selected_node[selected_node.Count - 1]);
-
-            for (int i = 1; tree_items.Count == 1; i++)
-            {
-                tree_items = Utility.SelectItems(selected_node[selected_node.Count - i]);
-            }
-
+            tree_items = Utility.SelectItems(selected_node);
             Thread t1 = new Thread(new ThreadStart(Update));
             t1.Start();
         }
@@ -81,7 +76,7 @@ namespace YashmaClientWPF
         /// </summary>
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (selected_node[selected_node.Count - 1].Length > 0)
+            if (selected_node.Length > 0)
             {
                 timer.Interval = TimeSpan.FromMilliseconds(1000);
                 timer.Start();
@@ -93,8 +88,7 @@ namespace YashmaClientWPF
         /// </summary>
         private void TextBlock_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            selected_node.Add(((sender as TextBlock).Tag as XmlAttribute).Value);
-            tree_items = Utility.SelectItems(selected_node[selected_node.Count - 1]);
+            tree_items = Utility.SelectItems(selected_node = ((sender as TextBlock).Tag as XmlAttribute).Value);
             Thread t1 = new Thread(new ThreadStart(Update));
             t1.Start();
         }
@@ -106,48 +100,89 @@ namespace YashmaClientWPF
         private void Update()
         {
             Dispatcher.Invoke(new ThreadStart(delegate
+        {
+            content.Children.Clear();
+            content.ColumnDefinitions.Clear();
+            content.RowDefinitions.Clear();
+
+            if (tree_items.Count != 1)
             {
-                if (tree_items.Count != 1)
+                int row_count = (int)Math.Ceiling(Width / 220) - 1;
+                int col_count = (int)Math.Ceiling((double)tree_items.Count / row_count);
+
+                for (int i = 0; i < row_count; i++) content.ColumnDefinitions.Add(new ColumnDefinition());
+
+                for (int i = 0; i < col_count; i++) content.RowDefinitions.Add(new RowDefinition());
+
+                for (int i = 0, m = 0; i < col_count; i++)
                 {
-                    content.Children.Clear();
-                    content.ColumnDefinitions.Clear();
-                    content.RowDefinitions.Clear();
-
-                    int row_count = (int)Math.Ceiling(Width / 220) - 1;
-                    int col_count = (int)Math.Ceiling((double)tree_items.Count / row_count);
-
-                    for (int i = 0; i < row_count; i++) content.ColumnDefinitions.Add(new ColumnDefinition());
-
-                    for (int i = 0; i < col_count; i++) content.RowDefinitions.Add(new RowDefinition());
-
-                    for (int i = 0, m = 0; i < col_count; i++)
+                    for (int j = 0; j < row_count; j++)
                     {
-                        for (int j = 0; j < row_count; j++)
+                        if (m < tree_items.Count)
                         {
-                            if (m < tree_items.Count)
-                            {
-                                ImageSourceConverter imgs = new ImageSourceConverter();
-                                ContentElement contentElement = new ContentElement();
-                                contentElement.path = tree_items[m].Tag;
-                                contentElement.article.Content = tree_items[m].Name;
-                                contentElement.MouseUp += contentElement_MouseUp;
-                                contentElement.icon.SetValue(Image.SourceProperty, imgs.ConvertFromString(Environment.CurrentDirectory + "\\data\\images\\" + tree_items[m++].Image + "_p.png"));
+                            ImageSourceConverter imgs = new ImageSourceConverter();
+                            ContentElement contentElement = new ContentElement();
+                            contentElement.path = tree_items[m].Tag;
+                            contentElement.article.Content = tree_items[m].Name;
+                            contentElement.MouseUp += contentElement_MouseUp;
+                            contentElement.icon.SetValue(Image.SourceProperty, imgs.ConvertFromString(Environment.CurrentDirectory + "\\data\\images\\" + tree_items[m++].Image + "_p.png"));
 
-                                Grid.SetRow(contentElement, i);
-                                Grid.SetColumn(contentElement, j);
+                            Grid.SetRow(contentElement, i);
+                            Grid.SetColumn(contentElement, j);
 
-                                content.Children.Add(contentElement);
-                            }
+                            content.Children.Add(contentElement);
                         }
                     }
                 }
-                else
-                {
-                    ItemCardWindow icw = new ItemCardWindow(tree_items[0]);
-                    icw.Show();
-                }
-                content.UpdateLayout();
+            }
+            else
+            {
+                string[] temp;
+                ContentElement contentElement = new ContentElement();
+                ImageSourceConverter imgs = new ImageSourceConverter();
+
+                ItemCard itemCard = new ItemCard();
+                itemCard.name.Content = "Артикул: " + tree_items[0].Name;
+                itemCard.weight.Content = "Вес: " + (temp = tree_items[0].Weight.Split('|'))[0] + " - " + temp[temp.Length - 1];
+                itemCard.sample.Content = "Проба: " + tree_items[0].Sample;
+                itemCard.zoom.MouseUp += zoom_MouseUp;
+                itemCard.booking.Click += booking_Click;
+                itemCard.order.Click += order_Click;
+                itemCard.description.Content = tree_items[0].Description;
+                itemCard.Margin = content.Margin;
+                itemCard.icon.SetValue(Image.SourceProperty, imgs.ConvertFromString(Environment.CurrentDirectory + "\\data\\images\\" + (id = tree_items[0].Image) + "_p.png"));
+
+                content.Children.Add(itemCard);
+            }
+            content.UpdateLayout();
             }));
+        }
+
+        /// <summary>
+        /// Показывает корзину
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void order_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
+        /// <summary>
+        /// Добавляет позицию в товар
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void booking_Click(object sender, RoutedEventArgs e)
+        {
+            order.Add();
+        }
+
+        void zoom_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            ZoomImageWindow ziw = new ZoomImageWindow(id);
+            ziw.Show();
         }
 
         /// <summary>
@@ -155,8 +190,7 @@ namespace YashmaClientWPF
         /// </summary>
         void contentElement_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            selected_node.Add((sender as ContentElement).path);
-            tree_items = Utility.SelectItems(selected_node[selected_node.Count - 1]);
+            tree_items = Utility.SelectItems(selected_node = (sender as ContentElement).path);
             Thread t1 = new Thread(new ThreadStart(Update));
             t1.Start();
         }

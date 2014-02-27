@@ -1,0 +1,31 @@
+﻿<Window x:Class="YashmaClientWPF.ItemCardWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Name="WPFWindow"
+        Title="" 
+        Height="500" 
+        Width="800" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+
+    <Grid>
+        <Rectangle Fill="White" Height="192" Margin="-1,49,-1,0" Stroke="Black" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5"/>
+        <Border Name="border" ClipToBounds="True" Height="190" VerticalAlignment="Top" Margin="0,50,0,0" Grid.RowSpan="2">
+            <Image Name="image" Opacity="1" Height="190" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Border>
+        <Label Content="Используйте колесико мыши для увеличения текущего масштаба." Height="35" Margin="10,10,10,0" Name="label1" VerticalAlignment="Top" HorizontalContentAlignment="Center" />
+
+        <Label x:Name="name" Content="Name" Margin="10,246,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="130"/>
+        <Label x:Name="weight" Content="Weight" Margin="10,276.96,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="130"/>
+        <Label x:Name="sample" Content="Sample" Margin="10,307.92,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="130"/>
+        <Label x:Name="description" Content="Description" Margin="10,338.88,654,48"/>
+        <StatusBar Height="33" Margin="10,0,10,10" VerticalAlignment="Bottom" Grid.Row="1" Background="#FFCDC7C7">
+            <Label x:Name="total_weight" Content="Общий вес"/>
+        </StatusBar>
+
+        <Button x:Name="order" Content="Корзина" Margin="0,0,152,16.52" HorizontalAlignment="Right" Width="131" Height="19.96" VerticalAlignment="Bottom" Grid.Row="1"/>
+        <Button x:Name="booking" Content="Заказать" Margin="0,0,16,16.52" HorizontalAlignment="Right" Width="131" Height="19.96" VerticalAlignment="Bottom" Grid.Row="1"/>
+
+        <ScrollViewer Margin="145,245,10,48">
+            <Grid x:Name="size_list"/>
+        </ScrollViewer>
+    </Grid>
+</Window>
